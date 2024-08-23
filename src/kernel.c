@@ -56,14 +56,10 @@ void print(const char* str) {
     }
 }
 
-extern void problem();
-
 void kernel_main() {
     terminal_initialize();
     print("Hello world!\nWelcome to the kernel.");
 
     // Initialize the interrupt descriptor table
     idt_init();
-
-    problem();
 }
