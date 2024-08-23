@@ -15,6 +15,12 @@ void terminal_putchar(int x, int y, char c, char colour) {
 }
 
 void terminal_writechar(char c, char colour) {
+    if (c == '\n') {
+        terminal_col = 0;
+        terminal_row += 1;
+        return;
+    }
+
     terminal_putchar(terminal_col, terminal_row, c, colour);
     terminal_col += 1;
     if (terminal_col >= VGA_WIDTH) {
@@ -51,5 +57,5 @@ void print(const char* str) {
 
 void kernel_main() {
     terminal_initialize();
-    print("Hello world!");
+    print("Hello world!\nWelcome to the kernel.");
 }
