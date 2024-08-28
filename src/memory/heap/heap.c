@@ -84,7 +84,28 @@ int heap_get_start_block(struct heap* heap, uint32_t total_blocks) {
     if (bs == -1) {
         return -ENOMEM;
     }
-    return bs; // 41:39
+    return bs;
+}
+
+void* heap_block_to_address(struct heap* heap, uint32_t block) {
+    return heap->saddr + (block * LILOS_HEAP_BLOCK_SIZE);
+}
+
+void heap_mark_blocks_taken(struct heap* heap, int start_block, int total_blocks) {
+    int end_block = (start_block + total_blocks) - 1;
+    // for now we're not going to assert the blocks aren't bound already
+    HEAP_BLOCK_TABLE_ENTRY entry = HEAP_BLOCK_TABLE_ENTRY_TAKEN | HEAP_BLOCK_IS_FIRST;
+    if (total_blocks > 1) {
+        entry |= HEAP_BLOCK_HAS_NEXT;
+    }
+
+    for (int i = start_block; i <= end_block; i++) {
+        heap->table->entries[i] = entry;
+        entry = HEAP_BLOCK_TABLE_ENTRY_TAKEN;
+        if (i != end_block - 1) {
+            entry |= HEAP_BLOCK_HAS_NEXT;
+        }
+    }
 }
 
 void* heap_malloc_blocks(struct heap* heap, uint32_t total_blocks) {
@@ -95,13 +116,28 @@ void* heap_malloc_blocks(struct heap* heap, uint32_t total_blocks) {
         goto out;
     }
 
-    address = heap_block_to_address(heap, start_block); // 34:55 of video
+    address = heap_block_to_address(heap, start_block);
 
     // Mark the blocks as taken
     heap_mark_blocks_taken(heap, start_block, total_blocks);
 
 out:
     return address;
+}
+
+void heap_mark_blocks_free(struct heap* heap, int starting_block) {
+    struct heap_table* table = heap->table;
+    for (int i = starting_block; i < (int)table->total; i++) {
+        HEAP_BLOCK_TABLE_ENTRY entry = table->entries[i];
+        table->entries[i] = HEAP_BLOCK_TABLE_ENTRY_FREE;
+        if (!(entry & HEAP_BLOCK_HAS_NEXT)) {
+            break;
+        }
+    }
+}
+
+int heap_address_to_block(struct heap* heap, void* address) {
+    return ((int)(address - heap->saddr)) / LILOS_HEAP_BLOCK_SIZE;
 }
 
 void* heap_malloc(struct heap* heap, size_t size) {
@@ -111,5 +147,6 @@ void* heap_malloc(struct heap* heap, size_t size) {
 }
 
 void heap_free(struct heap* heap, void* ptr) {
-    return 0;
+    // might wanna check the bounds here
+    heap_mark_blocks_free(heap, heap_address_to_block(heap, ptr));
 }
