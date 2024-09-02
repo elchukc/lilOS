@@ -87,7 +87,5 @@ void kernel_main() {
 
     char buf[20];
     strcpy(buf, "hello!");
-    while(1) {
-
-    }
+    while(1) {}
 }

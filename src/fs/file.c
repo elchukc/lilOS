@@ -23,9 +23,9 @@ static struct filesystem** fs_get_free_filesystem() {
 
 void fs_insert_filesystem(struct filesystem* filesystem) {
     struct filesystem** fs;
-    if (filesystem == 0) {
+    // if (filesystem == 0) {
         // panic(); TODO
-    }
+    // }
     fs = fs_get_free_filesystem();
     if (!fs) {
         //panic(); TODO
