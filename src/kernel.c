@@ -12,6 +12,7 @@
 #include "fs/pparser.h"
 #include "disk/streamer.h"
 #include "gdt/gdt.h"
+#include "task/tss.h"
 
 uint16_t* video_mem = 0;
 uint16_t terminal_row = 0;
@@ -65,11 +66,15 @@ void panic(const char* msg) {
     while (1) {} // alternately, the halt instruction.
 }
 
+struct tss tss;
 struct gdt gdt_real[LILOS_TOTAL_GDT_SEGMENTS];
 struct gdt_structured gdt_structured[LILOS_TOTAL_GDT_SEGMENTS] = {
-    { .base = 0x00, .limit = 0x00, .type = 0x00 },          // NULL Segment
-    { .base = 0x00, .limit = 0xffffffff, .type = 0x9a },    // Kernel code Segment
-    { .base = 0x00, .limit = 0xffffffff, .type = 0x92 }     // Kernel data Segment
+    {.base = 0x00, .limit = 0x00, .type = 0x00},          // NULL Segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0x9a},    // Kernel code Segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0x92},    // Kernel data Segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0xf8},    // User code segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0xf2},    // User data segment
+    {.base = (uint32_t)&tss, .limit = sizeof(tss), .type = 0xe9} // TSS segment
 };
 
 void kernel_main() {
@@ -93,6 +98,14 @@ void kernel_main() {
 
     // Initialize the interrupt descriptor table
     idt_init();
+
+    // Setup the TSS
+    memset(&tss, 0x00, sizeof(tss));
+    tss.esp0 = 0x600000; // the kernel stack
+    tss.ss0 = KERNEL_DATA_SELECTOR;
+
+    // Load the TSS
+    tss_load(0x28);
 
     // Set up paging
     kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
