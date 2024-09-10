@@ -28,6 +28,18 @@ void paging_switch(uint32_t* directory) {
     current_directory = directory;
 }
 
+void paging_free_4gb(struct paging_4gb_chunk* chunk) {
+    for (int i = 0; i < 1024; i++) {
+        uint32_t entry = chunk->directory_entry[i];
+        // The lowest 3 bits are flags, hence & to get the page table address
+        uint32_t* table = (uint32_t*)(entry & 0xfffff000);
+        kfree(table);
+    }
+
+    kfree(chunk->directory_entry);
+    kfree(chunk);
+}
+
 bool paging_is_aligned(void* addr) {
     return ((uint32_t)addr % PAGING_PAGE_SIZE) == 0;
 }
