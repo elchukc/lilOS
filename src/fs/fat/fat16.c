@@ -6,6 +6,7 @@
 #include "memory/heap/kheap.h"
 #include "memory/memory.h"
 #include "status.h"
+#include "kernel.h"
 #include <stdint.h>
 
 #define LILOS_FAT16_SIGNATURE 0x29
