@@ -1,11 +1,11 @@
 #include "fat16.h"
+#include "config.h"
 #include "string/string.h"
 #include "disk/disk.h"
 #include "disk/streamer.h"
 #include "memory/heap/kheap.h"
 #include "memory/memory.h"
 #include "status.h"
-#include "kernel.h"
 #include <stdint.h>
 
 #define LILOS_FAT16_SIGNATURE 0x29
@@ -507,7 +507,7 @@ struct fat_item* fat16_new_fat_item_for_directory_item(struct disk* disk, struct
 
 struct fat_item* fat16_find_item_in_directory(struct disk* disk, struct fat_directory* directory, const char* name) {
     struct fat_item* f_item = 0;
-    char tmp_filename[LILOS_MAX_PATH]; // !!! DEFINED TWICE IN KERNEL.H AND CONFIG.H
+    char tmp_filename[LILOS_MAX_PATH];
     for (int i = 0; i < directory->total; i++) {
         // note the file names are info are loaded into memory already
         fat16_get_full_relative_filename(&directory->item[i], tmp_filename, sizeof(tmp_filename));
