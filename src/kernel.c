@@ -119,13 +119,7 @@ void kernel_main() {
     // Enable the system interrupts
     enable_interrupts();
 
-    int fd = fopen("0:/hello.txt", "r");
-    if (fd) {
-        struct file_stat s;
-        fstat(fd, &s);
-        fclose(fd);
+    task_run_first_ever_task();
 
-        print("testing\n");
-    }
     while(1) {}
 }
