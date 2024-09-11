@@ -6,12 +6,15 @@
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
 #include "string/string.h"
+#include "task/task.h"
+#include "task/process.h"
 #include "config.h"
 #include "disk/disk.h"
 #include "fs/file.h"
 #include "fs/pparser.h"
 #include "disk/streamer.h"
 #include "gdt/gdt.h"
+#include "status.h"
 #include "task/tss.h"
 
 uint16_t* video_mem = 0;
@@ -116,8 +119,11 @@ void kernel_main() {
     // Enable paging
     enable_paging();
 
-    // Enable the system interrupts
-    enable_interrupts();
+    struct process* process = 0;
+    int res = process_load("0:/blank.bin", &process);
+    if (res != LILOS_ALL_OK) {
+        panic("Failed to load blank.bin\n");
+    }
 
     task_run_first_ever_task();
 
