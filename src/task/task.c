@@ -156,6 +156,12 @@ int task_page() {
     return 0;
 }
 
+int task_page_task(struct task* task) {
+    user_registers();
+    paging_switch(task->page_directory);
+    return 0;
+}
+
 void task_run_first_ever_task() {
     if (!current_task) {
         panic("task_run_first_ever_task(): No current task exists!\n");
@@ -180,4 +186,23 @@ int task_init(struct task* task, struct process* process) {
     task->process = process;
 
     return 0;
+}
+
+/** Pull stack item from the task in the task stack.
+ *    Must be in kernel page to run this.
+ */
+void* task_get_stack_item(struct task* task, int index) {
+    void* res = 0;
+
+    uint32_t* sp_ptr = (uint32_t*) task->registers.esp; // virt addr
+
+    // Switch to the given task's page
+    task_page_task(task);
+
+    res = (void*) sp_ptr[index];
+
+    // Switch back to the kernel page
+    kernel_page();
+
+    return res;
 }
