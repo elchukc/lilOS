@@ -87,10 +87,6 @@ struct gdt_structured gdt_structured[LILOS_TOTAL_GDT_SEGMENTS] = {
     {.base = (uint32_t)&tss, .limit = sizeof(tss), .type = 0xe9} // TSS segment
 };
 
-void pic_timer_callback() {
-    print("Timer activated!\n");
-}
-
 void kernel_main() {
     terminal_initialize();
 
@@ -134,9 +130,6 @@ void kernel_main() {
 
     // Initialize all system keyboards
     keyboard_init();
-
-    // 0x20 is the first entry in the PIC: timer interrupt
-    idt_register_interrupt_callback(0x20, pic_timer_callback);
 
     struct process* process = 0;
     int res = process_load_switch("0:/blank.bin", &process);
