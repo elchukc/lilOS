@@ -4,6 +4,8 @@
 #include "status.h"
 #include "process.h"
 #include "memory/heap/kheap.h"
+#include "memory/paging/paging.h"
+#include "string/string.h"
 #include "memory/memory.h"
 
 // The current task that is running
@@ -104,6 +106,38 @@ void task_save_state(struct task* task, struct interrupt_frame* frame) {
     task->registers.edi = frame->edi;
     task->registers.edx = frame->edx;
     task->registers.esi = frame->esi;
+}
+
+/** Must be in kernel page before entering this function */
+int copy_string_from_task(struct task* task, void* virt, void* phys, int max) {
+    if (max >= PAGING_PAGE_SIZE)    
+        return -EINVARG;
+    
+    int res = 0;
+    char* tmp = kzalloc(max);
+    if (!tmp) {
+        res = -ENOMEM;
+        goto out;
+    }
+
+    uint32_t* task_directory = task->page_directory->directory_entry;
+    uint32_t old_entry = paging_get(task_directory, tmp);
+    paging_map(task->page_directory, tmp, tmp, PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    paging_switch(task->page_directory);
+    strncpy(tmp, virt, max);
+    kernel_page();
+
+    res = paging_set(task_directory, tmp, old_entry);
+    if (res < 0) {
+        res = -EIO;
+        goto out_free;
+    }
+    strncpy(phys, tmp, max);
+
+out_free:
+    kfree(tmp);
+out:
+    return res;
 }
 
 void task_current_save_state(struct interrupt_frame* frame) {
