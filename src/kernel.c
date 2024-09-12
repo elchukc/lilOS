@@ -69,6 +69,11 @@ void panic(const char* msg) {
     while (1) {} // alternately, the halt instruction.
 }
 
+void kernel_page() {
+    kernel_registers();
+    paging_switch(kernel_chunk);
+}
+
 struct tss tss;
 struct gdt gdt_real[LILOS_TOTAL_GDT_SEGMENTS];
 struct gdt_structured gdt_structured[LILOS_TOTAL_GDT_SEGMENTS] = {
