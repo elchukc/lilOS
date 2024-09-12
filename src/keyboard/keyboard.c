@@ -3,11 +3,14 @@
 #include "kernel.h"
 #include "task/process.h"
 #include "task/task.h"
+#include "classic.h"
 
 static struct keyboard* keyboard_list_head = 0;
 static struct keyboard* keyboard_list_tail = 0;
 
-void keyboard_init() {}
+void keyboard_init() {
+    keyboard_insert(classic_init());
+}
 
 /** Adds a new keyboard to our system */
 int keyboard_insert(struct keyboard* keyboard) {
