@@ -70,7 +70,6 @@ typedef int32_t elf32_off;
 struct elf32_phdr {
     elf32_word p_type;
     elf32_off p_offset;
-    // lowest base address is the lowest vaddr phdr
     elf32_addr p_vaddr;
     elf32_addr p_paddr;
     elf32_word p_filesz;
@@ -125,5 +124,8 @@ struct elf32_sym {
     unsigned char st_other;
     elf32_half st_shndx;
 } __attribute__((packed));
+
+void* elf_get_entry_ptr(struct elf_header* elf_header);
+uint32_t elf_get_entry(struct elf_header* elf_header);
 
 #endif
