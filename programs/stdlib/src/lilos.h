@@ -1,7 +1,10 @@
 #ifndef LILOS_H
 #define LILOS_H
 
+#include <stddef.h>
+
 void print(const char* message);
 int lilos_getkey();
+void* lilos_malloc(size_t size);
 
 #endif

@@ -3,6 +3,7 @@
 ; :function ensures elf type is a function symbol type
 global print:function
 global lilos_getkey:function
+global lilos_malloc:function
 
 ; void print(const char* message)
 print:
@@ -30,5 +31,16 @@ lilos_getkey:
     mov eax, 2 ; Command GETKEY
     int 0x80
 
+    pop ebp
+    ret
+
+; void* lilos_malloc(size_t size)
+lilos_malloc:
+    push ebp
+    mov ebp, esp
+    mov eax, 4 ; Command MALLOC (allocates memory for process)
+    push dword[ebp+8] ; variable "size"
+    int 0x80
+    add esp, 4
     pop ebp
     ret
