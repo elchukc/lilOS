@@ -41,4 +41,9 @@ struct elf_file {
 int elf_load(const char* filename, struct elf_file** file_out);
 void elf_close(struct elf_file* file);
 
+void* elf_virt_base(struct elf_file* file);
+void* elf_virt_end(struct elf_file* file);
+void* elf_phys_base(struct elf_file* file);
+void* elf_phys_end(struct elf_file* file);
+
 #endif
