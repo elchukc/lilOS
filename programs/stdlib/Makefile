@@ -1,4 +1,4 @@
-FILES=./build/start.o
+FILES=./build/start.o ./build/lilos.o
 INCLUDES=
 
 all: $(FILES)
@@ -6,6 +6,9 @@ all: $(FILES)
 
 ./build/start.o: ./src/start.asm
 	nasm -f elf ./src/start.asm -o ./build/start.o
+
+./build/lilos.o: ./src/lilos.asm
+	nasm -f elf ./src/lilos.asm -o ./build/lilos.o
 
 clean:
 	rm -rf $(FILES)
