@@ -5,6 +5,7 @@ int main(int argc, char** argv) {
     print("Hello how are you!\n");
 
     void* ptr = malloc(512);
+    free(ptr);
     if (ptr) {}
     while(1) {
         if (lilos_getkey() != 0)

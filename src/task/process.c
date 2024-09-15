@@ -60,6 +60,36 @@ void* process_malloc(struct process* process, size_t size) {
     return ptr;
 }
 
+static bool process_is_process_pointer(struct process* process, void* ptr) {
+    for (int i = 0; i < LILOS_MAX_PROGRAM_ALLOCATIONS; i++) {
+        if (process->allocations[i] == ptr)
+            return true;
+    }
+    return false;
+}
+
+static void process_allocation_unjoin(struct process* process, void* ptr) {
+    for (int i = 0; i < LILOS_MAX_PROGRAM_ALLOCATIONS; i++) {
+        if (process->allocations[i] == ptr) {
+            process->allocations[i] = 0x00;
+        }
+    }
+}
+
+/** TODO this implementation currently iterates through allocations twice.
+ *      Could easily improve it.
+ */
+void process_free(struct process* process, void* ptr) {
+    if (!process_is_process_pointer(process, ptr)) {
+        // Pointer does not belong to this process. Can't free it.
+        return;
+    }
+    // Unjoin the allocation
+    process_allocation_unjoin(process, ptr);
+    // We can finally free the memory
+    kfree(ptr);
+}
+
 static int process_load_binary(const char* filename, struct process* process) {
     int res = 0;
     int fd = fopen(filename, "r");

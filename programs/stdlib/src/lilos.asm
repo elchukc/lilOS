@@ -1,9 +1,12 @@
 [BITS 32]
 
+section .asm
+
 ; :function ensures elf type is a function symbol type
 global print:function
 global lilos_getkey:function
 global lilos_malloc:function
+global lilos_free:function
 
 ; void print(const char* message)
 print:
@@ -40,6 +43,17 @@ lilos_malloc:
     mov ebp, esp
     mov eax, 4 ; Command MALLOC (allocates memory for process)
     push dword[ebp+8] ; variable "size"
+    int 0x80
+    add esp, 4
+    pop ebp
+    ret
+
+; void lilos_free(void* ptr)
+lilos_free:
+    push ebp
+    mov ebp, esp
+    mov eax, 5 ; Command FREE
+    push dword[ebp+8] ; variable "ptr"
     int 0x80
     add esp, 4
     pop ebp

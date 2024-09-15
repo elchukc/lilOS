@@ -6,5 +6,6 @@
 void print(const char* message);
 int lilos_getkey();
 void* lilos_malloc(size_t size);
+void lilos_free(void* ptr);
 
 #endif
