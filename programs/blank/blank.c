@@ -10,10 +10,13 @@ int main(int argc, char** argv) {
     putchar('Z');
     void* ptr = malloc(512);
     free(ptr);
-    if (ptr) {}
-    while(1) {
-        if (lilos_getkey() != 0)
-            print("Key was pressed.\n");
-    }
+    
+    char buf[1024];
+    lilos_terminal_readline(buf, sizeof(buf), true);
+
+    print(buf);
+
+    print("Shouldn't see this until we press a key.\n");
+    while(1) {}
     return 0;
 }
