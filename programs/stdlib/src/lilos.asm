@@ -2,6 +2,7 @@
 
 ; :function ensures elf type is a function symbol type
 global print:function
+global lilos_getkey:function
 
 ; void print(const char* message)
 print:
@@ -17,5 +18,17 @@ print:
     int 0x80
     ; Restore the stack ptr
     add esp, 4
+    pop ebp
+    ret
+
+; int lilos_getkey()
+lilos_getkey:
+    push ebp
+    mov ebp, esp
+    ; if the return type in C can fit into 4 bytes,
+    ;   C uses the eax register
+    mov eax, 2 ; Command GETKEY
+    int 0x80
+
     pop ebp
     ret
