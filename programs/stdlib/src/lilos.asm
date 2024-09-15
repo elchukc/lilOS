@@ -5,6 +5,7 @@ section .asm
 ; :function ensures elf type is a function symbol type
 global print:function
 global lilos_getkey:function
+global lilos_putchar:function
 global lilos_malloc:function
 global lilos_free:function
 
@@ -34,6 +35,17 @@ lilos_getkey:
     mov eax, 2 ; Command GETKEY
     int 0x80
 
+    pop ebp
+    ret
+
+; void putchar(char c)
+lilos_putchar:
+    push ebp
+    mov ebp, esp
+    mov eax, 3 ; Command PUTCHAR
+    push dword[ebp+8] ; variable 'c'
+    int 0x80
+    add esp, 4
     pop ebp
     ret
 
