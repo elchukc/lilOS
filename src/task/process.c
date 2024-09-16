@@ -54,10 +54,24 @@ void* process_malloc(struct process* process, size_t size) {
 
     int index = process_find_free_allocation_index(process);
     if (index < 0)
-        return 0;
+        goto out_err;
+
+    /** NOTE we only map the process' task, because currently processes only have one task
+     *      If you wanted multiple tasks per process, you'd need a function called process_map_to
+     *      to loop through every task of the process and do paging_map_to on them
+     */
+    int res = paging_map_to(process->task->page_directory, ptr, ptr, paging_align_address(ptr+size), PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    if (res < 0)
+        goto out_err;
 
     process->allocations[index] = ptr;
     return ptr;
+
+out_err:
+    if (ptr) {
+        kfree(ptr);
+    }
+    return 0;
 }
 
 static bool process_is_process_pointer(struct process* process, void* ptr) {
@@ -84,8 +98,14 @@ void process_free(struct process* process, void* ptr) {
         // Pointer does not belong to this process. Can't free it.
         return;
     }
+
+    // TODO remove the link in the page table by changing the flag to supervisor only
+    // or else it's a security flaw that lets other processes access that page in memory.
+    // You unlink it from page table by doing a paging_map_to again, without having the bit PAGING_ACCESS_FROM_ALL
+
     // Unjoin the allocation
     process_allocation_unjoin(process, ptr);
+
     // We can finally free the memory
     kfree(ptr);
 }
