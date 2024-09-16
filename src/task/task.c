@@ -176,6 +176,7 @@ int task_init(struct task* task, struct process* process) {
     memset(task, 0, sizeof(struct task));
     // Map the entire 4GB address space to itself
     //  by creating a page directory for that task
+    //  NOTE we shouldn't really set PAGING_ACCESS_FROM_ALL
     task->page_directory = paging_new_4gb(PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     if (!task->page_directory)
         return -EIO;
