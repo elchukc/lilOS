@@ -8,6 +8,7 @@ global lilos_getkey:function
 global lilos_putchar:function
 global lilos_malloc:function
 global lilos_free:function
+global lilos_process_load_start:function
 
 ; void print(const char* message)
 print:
@@ -43,7 +44,7 @@ lilos_putchar:
     push ebp
     mov ebp, esp
     mov eax, 3 ; Command PUTCHAR
-    push dword[ebp+8] ; variable 'c'
+    push dword[ebp+8] ; Variable 'c'
     int 0x80
     add esp, 4
     pop ebp
@@ -54,7 +55,7 @@ lilos_malloc:
     push ebp
     mov ebp, esp
     mov eax, 4 ; Command MALLOC (allocates memory for process)
-    push dword[ebp+8] ; variable "size"
+    push dword[ebp+8] ; Variable "size"
     int 0x80
     add esp, 4
     pop ebp
@@ -65,8 +66,20 @@ lilos_free:
     push ebp
     mov ebp, esp
     mov eax, 5 ; Command FREE
-    push dword[ebp+8] ; variable "ptr"
+    push dword[ebp+8] ; Variable "ptr"
     int 0x80
+    add esp, 4
+    pop ebp
+    ret
+
+; void lilos_process_load_start(const char* filename)
+lilos_process_load_start:
+    ; There should really be error handling on this function
+    push ebp
+    mov ebp, esp
+    mov eax, 6 ; Command PROCESS_LOAD_START (starts a process)
+    push dword[ebp+8] ; Variable "filename"
+    int 0x80 ; We won't actually be returning from this interrupt
     add esp, 4
     pop ebp
     ret
