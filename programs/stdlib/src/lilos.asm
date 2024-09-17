@@ -9,6 +9,7 @@ global lilos_putchar:function
 global lilos_malloc:function
 global lilos_free:function
 global lilos_process_load_start:function
+global lilos_process_get_arguments:function
 
 ; void print(const char* message)
 print:
@@ -80,6 +81,19 @@ lilos_process_load_start:
     mov eax, 6 ; Command PROCESS_LOAD_START (starts a process)
     push dword[ebp+8] ; Variable "filename"
     int 0x80 ; We won't actually be returning from this interrupt
+    add esp, 4
+    pop ebp
+    ret
+
+; TODO command 7
+
+; void lilos_process_get_arguments(struct process_arguments* arguments)
+lilos_process_get_arguments:
+    push ebp
+    mov ebp, esp
+    mov eax, 8 ; Command GET_PROGRAM_ARGUMENTS
+    push dword[ebp+8] ; Variable "arguments"
+    int 0x80
     add esp, 4
     pop ebp
     ret

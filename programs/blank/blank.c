@@ -4,13 +4,9 @@
 #include "string.h"
 
 int main(int argc, char** argv) {
-    char str[] = "I walk across the room and look out.";
-    struct command_argument* root_command = lilos_parse_command(str, sizeof(str));
-    struct command_argument* command = root_command;
-    while(command != 0x00) {
-        printf("%s\n", command->argument);
-        command = command->next;
-    }
+    struct process_arguments arguments;
+    lilos_process_get_arguments(&arguments);
+    printf("%i %s\n", arguments.argc, arguments.argv[0]);
 
     while(1) {}
     return 0;
