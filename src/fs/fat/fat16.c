@@ -441,7 +441,7 @@ void fat16_fat_item_free(struct fat_item* item) {
         kfree(item->item);
     }
     else {
-        // TODO panic
+       panic("Directory item not a known item type\n");
     }
 
     kfree(item);
@@ -498,11 +498,13 @@ struct fat_item* fat16_new_fat_item_for_directory_item(struct disk* disk, struct
     if (item->attribute & FAT_FILE_SUBDIRECTORY) {
         f_item->directory = fat16_load_fat_directory(disk, item);
         f_item->type = FAT_ITEM_TYPE_DIRECTORY;
+        goto out;
     }
 
     f_item->type = FAT_ITEM_TYPE_FILE;
     // The memory passed to us might get deleted or freed, so we must clone
     f_item->item = fat16_clone_directory_item(item, sizeof(struct fat_directory_item));
+out:
     return f_item;
 }
 
@@ -549,23 +551,34 @@ out:
 }
 
 void* fat16_open(struct disk* disk, struct path_part* path, FILE_MODE mode) {
+    struct fat_file_descriptor* descriptor = 0;
+    int err_code = 0;
+
     if (mode != FILE_MODE_READ) {
-        return ERROR(-ERDONLY);
+        err_code = -ERDONLY;
+        goto err_out;
     }
 
-    struct fat_file_descriptor* descriptor = 0;
     descriptor = kzalloc(sizeof(struct fat_file_descriptor));
     if (!descriptor) {
-        return ERROR(-ENOMEM);
+        err_code = -ENOMEM;
+        goto err_out;
     }
 
     descriptor->item = fat16_get_directory_entry(disk, path);
     if (!descriptor->item) {
-        return ERROR(-EIO);
+        err_code = -EIO;
+        goto err_out;
     }
 
     descriptor->pos = 0;
     return descriptor;
+
+err_out:
+    if (descriptor)
+        kfree(descriptor);
+
+    return ERROR(err_code);
 }
 
 int fat16_close(void* private) {
