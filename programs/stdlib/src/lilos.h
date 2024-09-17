@@ -22,6 +22,7 @@ void lilos_free(void* ptr);
 void lilos_process_load_start(const char* filename);
 int lilos_system(struct command_argument* arguments);
 void lilos_process_get_arguments(struct process_arguments* arguments);
+void lilos_exit();
 
 int lilos_getkeyblock();
 void lilos_terminal_readline(char* out, int max, bool output_while_typing);

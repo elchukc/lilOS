@@ -11,6 +11,7 @@ global lilos_free:function
 global lilos_process_load_start:function
 global lilos_system:function
 global lilos_process_get_arguments:function
+global lilos_exit:function
 
 ; void print(const char* message)
 print:
@@ -106,5 +107,14 @@ lilos_process_get_arguments:
     push dword[ebp+8] ; Variable "arguments"
     int 0x80
     add esp, 4
+    pop ebp
+    ret
+
+; void lilos_exit()
+lilos_exit:
+    push ebp
+    mov ebp, esp
+    mov eax, 9 ; Command EXIT
+    int 0x80
     pop ebp
     ret

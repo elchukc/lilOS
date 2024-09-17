@@ -72,3 +72,13 @@ void* isr80h_command8_get_program_arguments(struct interrupt_frame* frame) {
     process_get_arguments(process, &arguments->argc, &arguments->argv);
     return 0;
 }
+
+void* isr80h_command9_exit(struct interrupt_frame* frame) {
+    struct process* process = task_current()->process;
+    process_terminate(process);
+    task_next();
+    /** TODO We could take some exit code and make sure the process that's blocking
+     *      on us, that started our process, gets told about the error/success code.
+     */
+    return 0;
+}
