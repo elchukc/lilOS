@@ -54,6 +54,17 @@ void idt_handle_exception() {
     // TODO might also want to implement a program crash program to tell user why program crashed
 }
 
+void idt_clock()  {
+    // Acknowledge the PIC so we can keep recieving interrupts
+    outb(0x20, 0x20);
+    // Switch to the next task
+    task_next();
+
+    /** To take this further, we could give each process its own video mem,
+     *      and then switch between then with the function keys.
+     */
+}
+
 void idt_init() {
     memset(idt_descriptors, 0, sizeof(idt_descriptors));
     idtr_descriptor.limit = sizeof(idt_descriptors) - 1;
@@ -72,6 +83,7 @@ void idt_init() {
         //    block and recieve the return result from the program it started
     }
 
+    idt_register_interrupt_callback(0x20, idt_clock);
     // Load the interrupt descriptor table
     idt_load(&idtr_descriptor);
 }
