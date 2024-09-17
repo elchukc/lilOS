@@ -3,6 +3,7 @@
 #include "kernel.h"
 #include "memory/memory.h"
 #include "io/io.h"
+#include "task/process.h"
 #include "task/task.h"
 #include "status.h"
 
@@ -47,6 +48,12 @@ void idt_set(int interrupt_no, void* address) {
     desc->offset_2 = (uint32_t) address >> 16;
 }
 
+void idt_handle_exception() {
+    process_terminate(task_current()->process);
+    task_next();
+    // TODO might also want to implement a program crash program to tell user why program crashed
+}
+
 void idt_init() {
     memset(idt_descriptors, 0, sizeof(idt_descriptors));
     idtr_descriptor.limit = sizeof(idt_descriptors) - 1;
@@ -57,6 +64,13 @@ void idt_init() {
     }
     idt_set(0, idt_zero);
     idt_set(0x80, isr80h_wrapper);
+
+    for (int i = 0; i < 0x20; i++) {
+        // We handle every interrupt code the same way
+        idt_register_interrupt_callback(i, idt_handle_exception);
+        // TODO In case of crash, somehow have the invoke command 
+        //    block and recieve the return result from the program it started
+    }
 
     // Load the interrupt descriptor table
     idt_load(&idtr_descriptor);
