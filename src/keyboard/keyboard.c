@@ -7,6 +7,7 @@
 
 static struct keyboard* keyboard_list_head = 0;
 static struct keyboard* keyboard_list_tail = 0;
+static KEYBOARD_CAPSLOCK_STATE capslock_state = KEYBOARD_CAPSLOCK_OFF;
 
 void keyboard_init() {
     keyboard_insert(classic_init());
@@ -41,6 +42,18 @@ void keyboard_backspace(struct process* process) {
     process->keyboard.tail -= 1;
     int real_index = keyboard_get_tail_index(process);
     process->keyboard.buffer[real_index] = 0x00;
+}
+
+KEYBOARD_CAPSLOCK_STATE keyboard_get_capslock() {
+    return capslock_state;
+}
+
+void keyboard_set_capslock(KEYBOARD_CAPSLOCK_STATE state) {
+    capslock_state = state;
+}
+
+void keyboard_toggle_capslock() {
+    keyboard_set_capslock(keyboard_get_capslock() == KEYBOARD_CAPSLOCK_ON ? KEYBOARD_CAPSLOCK_OFF : KEYBOARD_CAPSLOCK_ON);
 }
 
 /** Currently only supports ascii character set */
