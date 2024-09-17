@@ -3,7 +3,8 @@
 
 struct command_argument* lilos_parse_command(const char* command, int max) {
     struct command_argument* root_command = 0;
-    char scommand[1024];
+    // Must be max buffer size + 1 so it doesn't fail
+    char scommand[1025];
     if (max >= (int) sizeof(scommand))
         return 0;
 
@@ -72,4 +73,15 @@ void lilos_terminal_readline(char* out, int max, bool output_while_typing) {
 
     // Add the null terminator
     out[i] = 0x00;
+}
+
+int lilos_system_run(const char* command) {
+    char buf[1024];
+    strncpy(buf, command, sizeof(buf));
+    struct command_argument* root_command_arg = lilos_parse_command(buf, sizeof(buf));
+    if (!root_command_arg) {
+        // NOTE return -1 here because we'd have to make another status.h for userland
+        return -1;
+    }
+    return lilos_system(root_command_arg);
 }

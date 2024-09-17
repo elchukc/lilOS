@@ -9,6 +9,7 @@ global lilos_putchar:function
 global lilos_malloc:function
 global lilos_free:function
 global lilos_process_load_start:function
+global lilos_system:function
 global lilos_process_get_arguments:function
 
 ; void print(const char* message)
@@ -85,7 +86,17 @@ lilos_process_load_start:
     pop ebp
     ret
 
-; TODO command 7
+; int lilos_system(struct command_argument* arguments)
+lilos_system:
+    push ebp
+    mov ebp, esp
+    mov eax, 7 ; Command PROCESS_SYSTEM (runs a system command based on the arguments)
+    push dword[ebp+8] ; Variable "arguments"
+    int 0x80
+    add esp, 4
+    pop ebp
+    ; Because this never returns, eax will contain 7 if command is successful
+    ret
 
 ; void lilos_process_get_arguments(struct process_arguments* arguments)
 lilos_process_get_arguments:
