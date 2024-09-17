@@ -62,7 +62,8 @@ restore_general_purpose_registers:
     mov ecx, [ebx+20]
     mov eax, [ebx+24]
     mov ebx, [ebx+12]
-    pop ebp
+    ; Can't pop ebp since we need it to keep its value to restore
+    add esp, 4
     ret
 
 ; void user_registers()
