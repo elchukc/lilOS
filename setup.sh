@@ -1,3 +1,4 @@
+#/bin/bash
 # setup instructions for running on Ubuntu 24.04 LTS
 sudo apt upgrade
 sudo apt install -y nasm \
