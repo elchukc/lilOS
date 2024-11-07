@@ -1,5 +1,6 @@
 #/bin/bash
 # setup instructions for running on Ubuntu 24.04 LTS
+# This script needs only be run once
 sudo apt upgrade
 sudo apt install -y nasm \
                     make \
@@ -22,7 +23,7 @@ export PATH="$PREFIX/bin:$PATH"
 cd $HOME/src
 mkdir build-binutils
 cd build-binutils
-../binutils-2.43/configure --target=$TARGET --prefix="$PREFIX" --with-sysroot --disable-nls --disable-werror
+../binutils-2.35.1/configure --target=$TARGET --prefix="$PREFIX" --with-sysroot --disable-nls --disable-werror
 make
 make install
 
@@ -39,3 +40,10 @@ make all-gcc
 make all-target-libgcc
 make install-gcc
 make install-target-libgcc
+
+
+# create a mount point for loading /programs folder into lilOS's filesystem
+sudo mkdir /mnt/d
+
+
+echo "Setup complete! you can now test gcc with the command '$HOME/opt/cross/bin/$TARGET-gcc --version'"
