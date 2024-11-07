@@ -47,3 +47,4 @@ sudo mkdir /mnt/d
 
 
 echo "Setup complete! you can now test gcc with the command '$HOME/opt/cross/bin/$TARGET-gcc --version'"
+echo "You can build the project with './build.sh'"
