@@ -151,27 +151,37 @@ void kernel_main() {
     keyboard_init();
 
     struct process* process = 0;
-    int res = process_load_switch("0:/blank.elf", &process);
+    int res = process_load_switch("0:/shell.elf", &process);
     if (res != LILOS_ALL_OK) {
-        panic("Failed to load blank.elf\n");
+        panic("Failed to load shell.elf\n");
     }
 
-    struct command_argument argument;
-    strcpy(argument.argument, "testing");
-    argument.next = 0x00;
+    /**
+     * Below is code that quickly demonstrates multitasking,
+     *      but it doesn't allow the user to use the shell.
+     * 
+     */
+    // int res = process_load_switch("0:/blank.elf", &process);
+    // if (res != LILOS_ALL_OK) {
+    //     panic("Failed to load blank.elf\n");
+    // }
 
-    process_inject_arguments(process, &argument);
+    // struct command_argument argument;
+    // strcpy(argument.argument, "testing");
+    // argument.next = 0x00;
 
-    // Start another task
-    res = process_load_switch("0:/blank.elf", &process);
-    if (res != LILOS_ALL_OK) {
-        panic("Failed to load blank.elf\n");
-    }
+    // process_inject_arguments(process, &argument);
 
-    strcpy(argument.argument, "ABC");
-    argument.next = 0x00;
+    // // Start another task
+    // res = process_load_switch("0:/blank.elf", &process);
+    // if (res != LILOS_ALL_OK) {
+    //     panic("Failed to load blank.elf\n");
+    // }
 
-    process_inject_arguments(process, &argument);
+    // strcpy(argument.argument, "ABC");
+    // argument.next = 0x00;
+
+    // process_inject_arguments(process, &argument);
 
     task_run_first_ever_task();
 
