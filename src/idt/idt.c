@@ -49,7 +49,10 @@ void idt_set(int interrupt_no, void* address) {
 }
 
 void idt_handle_exception() {
+    // process_current will get the current active process, not the current process of the task that's running.
+    // See keyboard lecture for more detail
     process_terminate(task_current()->process);
+    // grab next task, drop privilege level back to userland + start executing
     task_next();
     // TODO might also want to implement a program crash program to tell user why program crashed
 }
