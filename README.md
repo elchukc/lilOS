@@ -19,6 +19,7 @@ Finally, run the one-time command `./setup.sh` to finish setting up your Ubuntu 
 
 ## Running the kernel
 Use the terminal to navigate the the workspace root and run `./build.sh`. Then `cd bin` and run lilOS using `qemu-system-i386 -hda ./os.bin`. You can type in the terminal, and if you shut down the OS and edit the files inside `lilOS/programs/`, you can change the text that appears on screen. You can also type!
+![lilOS terminal](https://github.com/user-attachments/assets/8e036267-fa67-42e0-bcee-f1457dd90866)
 
 ## Further development?
 Development of LilOS is on indefinite hiatus. I've shifted my focus to [a new kernel project](https://github.com/elchukc/qwos) to test my knowledge on a more independent kernel project, so it's unlikely lilOS will see further development.
